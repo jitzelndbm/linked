@@ -1,0 +1,6 @@
+[dependencies]
+
+[package]
+name = "linked"
+version = "0.1.0"
+edition = "2021"
