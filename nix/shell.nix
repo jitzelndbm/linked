@@ -1,5 +1,7 @@
 { pkgs, ... }:
 {
+  DATABASE_URL = "sqlite://linked.db";
+
   packages =
     let
       inherit (pkgs)
@@ -11,6 +13,8 @@
         bacon
         cargo
         rustc
+        usql
+        sqlx-cli
         ;
       inherit (rustPlatform) rustLibSrc;
     in
@@ -23,5 +27,7 @@
       cargo
       rustc
       rustLibSrc
+      usql
+      sqlx-cli
     ];
 }

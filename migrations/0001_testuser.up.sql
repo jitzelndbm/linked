@@ -1,0 +1,5 @@
+CREATE TABLE Users (
+    Id INTEGER NOT NULL PRIMARY KEY,
+    Username TEXT NOT NULL,
+    Password TEXT NOT NULL
+);
