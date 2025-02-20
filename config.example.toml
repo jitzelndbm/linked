@@ -1,0 +1,4 @@
+host = "0.0.0.0"
+port = 5005
+database_url = "sqlite://linked.db"
+log_level = "trace" # "off" | "error" | "warn" | "info" | "debug" | "trace"

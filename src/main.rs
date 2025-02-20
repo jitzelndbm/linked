@@ -1,30 +1,14 @@
-use std::error::Error;
+use std::env::args;
 
-use sqlx::prelude::FromRow;
-
-#[derive(Debug, FromRow)]
-struct User {
-    _id: i64,
-    _username: String,
-    _password: String,
-}
+const DEFAULT_CONFIG_PATH: &str = "/var/lib/linked/config.toml";
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    let pool = sqlx::sqlite::SqlitePoolOptions::new()
-        .connect(env!("DATABASE_URL"))
-        .await?;
-
-    sqlx::migrate!().run(&pool).await?;
-
-    let users: Vec<User> = sqlx::query_as!(
-        User,
-        r#"select Id as "_id", Username as "_username", Password as "_password" from Users"#
+async fn main() -> Result<(), Box<dyn ::std::error::Error>> {
+    linked::run(
+        args()
+            .nth(1)
+            .unwrap_or(DEFAULT_CONFIG_PATH.to_string())
+            .into(),
     )
-    .fetch_all(&pool)
-    .await?;
-
-    dbg!(users);
-
-    Ok(())
+    .await
 }
