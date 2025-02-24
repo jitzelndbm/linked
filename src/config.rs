@@ -8,7 +8,7 @@ pub struct Config {
     pub port: u16,
     pub log_level: String,
     pub htpasswd_file: PathBuf,
-    pub storage_dir: PathBuf,
+    pub db_url: String,
 }
 
 impl Default for Config {
@@ -18,7 +18,7 @@ impl Default for Config {
             port: 5005,
             log_level: "info".into(),
             htpasswd_file: "/var/lib/linked/htpasswd".into(),
-            storage_dir: "/var/lib/linked/store/".into(),
+            db_url: "sqlite:///var/lib/linked/linked.db".into(),
         }
     }
 }

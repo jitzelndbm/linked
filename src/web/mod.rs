@@ -2,7 +2,7 @@ use axum::Router;
 
 use crate::models::appstate::AppState;
 
-// /// This corresponds to the /api routes
+/// This corresponds to the /api routes
 //mod api;
 
 /// This module serves files from the /assets folder

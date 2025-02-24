@@ -1,4 +1,9 @@
-use std::{collections::HashMap, fs, path::PathBuf, str::FromStr};
+use std::{
+    collections::{hash_map, HashMap},
+    fs,
+    path::PathBuf,
+    str::FromStr,
+};
 
 use crate::error::{Error, Result};
 
@@ -21,6 +26,16 @@ const SEPARATOR: char = ':';
 //        }
 //    }
 //}
+
+impl Users {
+    pub fn get_users(&self) -> hash_map::Keys<Username, PasswordHash> {
+        self.0.keys()
+    }
+
+    pub fn contains(&self, username: &Username) -> bool {
+        self.0.contains_key(username)
+    }
+}
 
 impl TryFrom<PathBuf> for Users {
     type Error = Error;

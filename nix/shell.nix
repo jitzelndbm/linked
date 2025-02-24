@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  DATABASE_URL = "sqlite://linked.db";
+  DATABASE_URL = "sqlite://test-var/linked.db";
 
   packages =
     let

@@ -5,20 +5,5 @@
 {% endblock %}
 
 {% block content %}
-	<h1>Home content</h1>
-
-	<ul>
-		{% for bookmark in bookmarks %}
-			<li>
-				<article>
-					<header>
-						<h3>{{ bookmark.title }}</h3>
-					</header>
-
-					<p>id: {{ bookmark.id }}</p>
-					<a href="{{ bookmark.url }}">{{ bookmark.url }}</a>
-				</article>
-			</li>
-		{% endfor %}
-	</ul>
+	<h1>Hello {{ username }}</h1>
 {% endblock %}

@@ -11,17 +11,25 @@ use tracing::{error, info};
 pub type Result<T> = ::core::result::Result<T, Error>;
 
 /// This enum contains all errors that are possible with
-#[derive(ThisError)]
+#[derive(Debug, ThisError)]
 #[non_exhaustive]
 pub enum Error {
     //#[error("A generic error '{0}', with message '{1}' was sent to a client")]
     //Message(StatusCode, &'static str),
     //#[error("Generic Error '{0}' sent to a client")]
     //Status(StatusCode),
+
+    // 400 BAD_REQUEST
+    #[error("The username '{0}' could not be found in the htpasswd file")]
+    UserNotFound(String),
+    #[error("The provided url '{0}' is in an invalid format")]
+    InavlidUrlProvided(String),
+
+    // 401 UNAUTHORIZED
     #[error("A user tried to authenticate without a session")]
     SessionNotFound,
 
-    // 500 Errors
+    // 500 INTERNAL_SERVER_ERROR
     #[error("An error occurred while trying to retrieve session")]
     SessionRetrieval,
     #[error("Failed to parse the htpasswd file")]
@@ -38,6 +46,10 @@ pub enum Error {
     HomeEnvNotFound,
     #[error("The webserver could not be bound to the given ip and port")]
     BindError,
+    #[error("Failed to connect to the database: {0}")]
+    DatabaseConnect(String),
+    #[error("A query failed: {0}")]
+    QueryException(String),
 }
 
 /// This resembles the html template of an error page
@@ -76,14 +88,6 @@ impl IntoResponse for Error {
                 .into(),
             )
             .expect("Error template failed to render")
-    }
-}
-
-impl std::fmt::Debug for Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        // NOTE: \r, because there is a default prefix "Error: ", don't know how to remove it...
-        // Not the best approach, there might be another solution
-        writeln!(f, "{:>}{:>}", "[linked error]: ", self.to_string())
     }
 }
 

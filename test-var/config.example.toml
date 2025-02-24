@@ -5,4 +5,4 @@ host = "0.0.0.0"
 port = 5005
 log_level = "trace" # "off" | "error" | "warn" | "info" | "debug" | "trace"
 htpasswd_file = "./test-var/htpasswd_example"
-storage_dir = "./test-var/bookmarks"
+db_url = "./test-var/linked.db"
