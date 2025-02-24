@@ -1,0 +1,23 @@
+{% extends "./base.html" %}
+
+{% block title %}
+	{{ status_code }}
+	{#+ #}
+{% endblock %}
+
+{% block content %}
+	<header>
+		<h1>{{ status_code }}</h1>
+		{% match reason %}
+			{% when Some with (r) %}
+			<p>{{ r }}</p>
+			{% when None %}
+		{% endmatch %}
+	</header>
+
+	{% match message %}
+		{% when Some with (m) +%}
+		<pre>message: {{+ m }}</pre>
+		{% when None %}
+	{% endmatch %}
+{% endblock %}

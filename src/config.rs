@@ -1,11 +1,14 @@
+use std::path::PathBuf;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
     pub host: String,
     pub port: u16,
-    pub database_url: String,
     pub log_level: String,
+    pub htpasswd_file: PathBuf,
+    pub storage_dir: PathBuf,
 }
 
 impl Default for Config {
@@ -13,8 +16,9 @@ impl Default for Config {
         Self {
             host: "127.0.0.1".into(),
             port: 5005,
-            database_url: "sqlite://linked.db".into(),
             log_level: "info".into(),
+            htpasswd_file: "/var/lib/linked/htpasswd".into(),
+            storage_dir: "/var/lib/linked/store/".into(),
         }
     }
 }
