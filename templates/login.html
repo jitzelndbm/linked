@@ -5,6 +5,10 @@
 {% endblock %}
 
 {% block content %}
+	{% if display_error_message %}
+		<pre>Something went wrong while trying to log in!</pre>
+	{% endif %}
+
 	<form action="" method="POST">
 		<label for="username">Username:</label>
 		<input type="text" id="username" name="username" required /><br /><br />

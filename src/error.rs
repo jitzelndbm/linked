@@ -14,10 +14,8 @@ pub type Result<T> = ::core::result::Result<T, Error>;
 #[derive(Debug, ThisError)]
 #[non_exhaustive]
 pub enum Error {
-    //#[error("A generic error '{0}', with message '{1}' was sent to a client")]
-    //Message(StatusCode, &'static str),
-    //#[error("Generic Error '{0}' sent to a client")]
-    //Status(StatusCode),
+    #[error("Page could not be found")]
+    PageNotFound,
 
     // 400 BAD_REQUEST
     #[error("The username '{0}' could not be found in the htpasswd file")]
@@ -32,8 +30,8 @@ pub enum Error {
     // 500 INTERNAL_SERVER_ERROR
     #[error("An error occurred while trying to retrieve session")]
     SessionRetrieval,
-    #[error("Adding of session went wrong")]
-    SessionAdding,
+    #[error("An error occurred while trying to remove a session value")]
+    SessionRemoval,
     #[error("Failed to parse the htpasswd file")]
     Htpasswd,
     #[error("The htpasswd file could not be found")]
@@ -60,16 +58,24 @@ pub enum Error {
 pub struct ErrorTemplate<'a> {
     status_code: &'a str,
     reason: Option<&'static str>,
-    message: Option<&'static str>,
+    message: Option<String>,
 }
 
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
-        let (status_code, message) = match self {
+        let (status_code, message): (StatusCode, Option<String>) = match self {
+            Self::UserNotFound(_) | Self::InavlidUrlProvided(_) => {
+                info!("{}", self.to_string());
+                (StatusCode::BAD_REQUEST, Some(self.to_string()))
+            }
             Self::SessionNotFound => {
                 info!("{}", self.to_string());
-                (StatusCode::UNAUTHORIZED, Some("No session token found"))
+                (
+                    StatusCode::UNAUTHORIZED,
+                    Some("No session token found".to_string()),
+                )
             }
+            Self::PageNotFound => (StatusCode::NOT_FOUND, None),
             _ => {
                 error!("{}", self.to_string());
                 (StatusCode::INTERNAL_SERVER_ERROR, None)
@@ -91,6 +97,10 @@ impl IntoResponse for Error {
             )
             .expect("Error template failed to render")
     }
+}
+
+pub async fn not_found_handler() -> Response {
+    Error::PageNotFound.into_response()
 }
 
 pub fn default_error_handler(error: &Error, output: &mut dyn Write) {

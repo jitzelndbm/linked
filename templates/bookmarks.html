@@ -1,0 +1,23 @@
+{% extends "./base.html" %}
+
+{% block title %}
+	Home
+{% endblock %}
+
+{% block content %}
+	<main id="bookmark-main">
+		<header id="bookmark-header">
+			<h2>Bookmarks</h2>
+			<form>
+				<input type="text" placeholder="Search" name="q" />
+			</form>
+		</header>
+
+		<ul>
+			{% for bookmark in bookmarks %}
+				<li><a href="{{ bookmark.url }}">{{ bookmark.title }}</a></li>
+			{% endfor %}
+		</ul>
+	</main>
+	<aside></aside>
+{% endblock %}

@@ -3,6 +3,6 @@
 
 host = "0.0.0.0"
 port = 5005
-log_level = "trace" # "off" | "error" | "warn" | "info" | "debug" | "trace"
+log_level = "info" # "off" | "error" | "warn" | "info" | "debug" | "trace"
 htpasswd_file = "./test-var/htpasswd_example"
 db_url = "./test-var/linked.db"

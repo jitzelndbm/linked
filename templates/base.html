@@ -3,26 +3,13 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/styles.css" />
+
 		<title>{% block title %}{% endblock %}</title>
-
-		<link rel="stylesheet" href="/assets/styles.css" />
-
-		<!-- HTMX stuff -->
-		<!-- <script src="/assets/htmx.min.js"></script> -->
-
-		<!-- Icons -->
-		<link
-			rel="stylesheet"
-			href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
-		/>
 	</head>
 	<body>
-		<main>
-			{% block content %}
-				<p>Default, make sure to use the content block</p>
-			{% endblock %}
-		</main>
-
-		<footer></footer>
+		{% block content %}
+			<p>Default, make sure to use the content block</p>
+		{% endblock %}
 	</body>
 </html>

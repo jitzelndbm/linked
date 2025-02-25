@@ -1,0 +1,5 @@
+host = "127.0.0.1"
+port = 5005
+log_level = "info"
+htpasswd_file = "/var/lib/linked/htpasswd"
+db_url = "sqlite:///var/lib/linked/linked.db"

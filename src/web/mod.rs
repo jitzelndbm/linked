@@ -1,21 +1,35 @@
-use axum::Router;
+use axum::{
+    http::header,
+    response::{IntoResponse, Response},
+    routing::get,
+    Router,
+};
 
-use crate::models::appstate::AppState;
+use crate::{error, models::appstate::AppState};
 
 /// This corresponds to the /api routes
 //mod api;
-
-/// This module serves files from the /assets folder
-mod assets;
 
 /// This module contains all the pages that are normally visited by users
 mod pages;
 
 /// Returns the main router, that is served in `lib.rs`
 pub fn router() -> Router<AppState> {
-    Router::<AppState>::new().merge(pages::router())
-    //.nest("/assets", assets::router())
+    Router::<AppState>::new()
+        .merge(pages::router())
+        .route("/styles.css", get(css_provide))
+        .fallback(error::not_found_handler)
 
     //.nest("/api", api::router())
-    //.fallback(error::not_found_handler)
+}
+
+pub async fn css_provide() -> Response {
+    (
+        [(
+            header::CONTENT_TYPE,
+            header::HeaderValue::from_static("text/css"),
+        )],
+        include_str!("../../assets/styles.css"),
+    )
+        .into_response()
 }

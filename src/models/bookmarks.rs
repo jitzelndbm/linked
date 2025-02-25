@@ -5,35 +5,35 @@ use crate::error::{Error, Result};
 
 use super::users::{Username, Users};
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Bookmark {
     id: i64,
     username: Username,
-    title: String,
-    url: String,
-    description: Option<String>,
-    notes: Option<String>,
+    pub title: String,
+    pub url: String,
+    pub description: Option<String>,
+    pub notes: Option<String>,
 }
 
 impl Bookmark {
     pub async fn insert(
         db: &Pool<Sqlite>,
         users: Users,
-        username: Username,
-        title: String,
-        url: String,
-        description: Option<String>,
-        notes: Option<String>,
+        username: &Username,
+        title: &str,
+        url: &str,
+        description: Option<&str>,
+        notes: Option<&str>,
     ) -> Result<()> {
         if !users.contains(&username) {
-            return Err(Error::UserNotFound(username));
+            return Err(Error::UserNotFound(username.to_string()));
         }
 
         if !["https://", "http://"].iter().any(|&p| url.starts_with(p)) {
-            return Err(Error::InavlidUrlProvided(url));
+            return Err(Error::InavlidUrlProvided(url.to_string()));
         }
 
-        sqlx::query!("INSERT INTO bookmarks (username, title, url, description, notes) VALUES ($0, $1, $2, $3, $4)", username, title, url, description, notes)
+        sqlx::query!("INSERT INTO bookmarks (username, title, url, description, notes) VALUES ($1, $2, $3, $4, $5)", username, title, url, description, notes)
             .execute(db)
             .await
             .map_err(|e| Error::QueryException(e.to_string()))?;
@@ -45,7 +45,7 @@ impl Bookmark {
         match range {
             Some((begin, end)) => sqlx::query_as!(
                 Self,
-                "SELECT * FROM bookmarks WHERE id BETWEEN $0 AND $1",
+                "SELECT * FROM bookmarks WHERE id BETWEEN $1 AND $2",
                 begin,
                 end
             )
@@ -61,17 +61,17 @@ impl Bookmark {
 
     pub async fn index_by_user(
         db: &Pool<Sqlite>,
-        username: Username,
+        username: &Username,
         rpp_page: Option<(usize, usize)>,
     ) -> Result<Vec<Self>> {
         match rpp_page {
             Some((records_per_page, page_number)) => {
                 let limit = records_per_page as i64;
-                let offset = page_number as i64 * limit;
+                let offset = (page_number as i64 - 1) * limit;
 
                 sqlx::query_as!(
                     Self,
-                    "SELECT * FROM bookmarks WHERE username = $0 ORDER BY id LIMIT $1 OFFSET $2",
+                    "SELECT * FROM bookmarks WHERE username = $1 ORDER BY id LIMIT $2 OFFSET $3",
                     username,
                     limit,
                     offset
@@ -82,7 +82,7 @@ impl Bookmark {
             }
             None => sqlx::query_as!(
                 Self,
-                "SELECT * FROM bookmarks WHERE username = $0",
+                "SELECT * FROM bookmarks WHERE username = $1",
                 username
             )
             .fetch_all(db)
