@@ -34,7 +34,7 @@ pub async fn run(config_path: PathBuf) -> Result<(), Error> {
         .connect(&config.db_url)
         .await
         .map_err(|e| Error::DatabaseConnect(e.to_string()))?;
-    let users: Users = config.htpasswd_file.try_into()?;
+    let users: Users = Users::new(config.htpasswd_file)?;
 
     // Assemble the main router
     let app = web::router()

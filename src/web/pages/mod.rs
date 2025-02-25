@@ -8,7 +8,8 @@ mod new;
 mod signout;
 
 pub fn router() -> Router<AppState> {
-    Router::<AppState>::new().route("/", get(index::get))
-    //.route("/login", get(|| async { "Hello" }))
+    Router::<AppState>::new()
+        .route("/", get(index::get))
+        .route("/login", get(login::get).post(login::post))
     //.route("/signout", get(|| async { "Hello" }))
 }

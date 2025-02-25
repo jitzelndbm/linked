@@ -32,6 +32,8 @@ pub enum Error {
     // 500 INTERNAL_SERVER_ERROR
     #[error("An error occurred while trying to retrieve session")]
     SessionRetrieval,
+    #[error("Adding of session went wrong")]
+    SessionAdding,
     #[error("Failed to parse the htpasswd file")]
     Htpasswd,
     #[error("The htpasswd file could not be found")]

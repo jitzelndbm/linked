@@ -1,46 +1,17 @@
-<html>
-	<head>
-		<title>Login</title>
-		<style>
-			label {
-				display: block;
-				margin-bottom: 5px;
-			}
-		</style>
-	</head>
+{% extends "./base.html" %}
 
-	<body>
-		<ul>
-			{% for message in messages %}
-				<li>
-					<span><strong>{{ message }}</strong></span>
-				</li>
-			{% endfor %}
-		</ul>
+{% block title %}
+	Login
+{% endblock %}
 
-		<form method="post">
-			<fieldset>
-				<legend>User login</legend>
-				<p>
-					<label for="username">Username</label>
-					<input name="username" id="username" value="ferris" />
-				</p>
-				<p>
-					<label for="password">Password</label>
-					<input
-						name="password"
-						id="password"
-						type="password"
-						value="hunter42"
-					/>
-				</p>
-			</fieldset>
+{% block content %}
+	<form action="" method="POST">
+		<label for="username">Username:</label>
+		<input type="text" id="username" name="username" required /><br /><br />
 
-			<input type="submit" value="login" />
+		<label for="password">Password:</label>
+		<input type="password" id="password" name="password" required /><br /><br />
 
-			{% if let Some(next) = next %}
-				<input type="hidden" name="next" value="{{ next }}" />
-			{% endif %}
-		</form>
-	</body>
-</html>
+		<button type="submit">Login</button>
+	</form>
+{% endblock %}

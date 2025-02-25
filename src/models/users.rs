@@ -5,6 +5,8 @@ use std::{
     str::FromStr,
 };
 
+use bcrypt::verify;
+
 use crate::error::{Error, Result};
 
 pub type Username = String;
@@ -28,12 +30,27 @@ const SEPARATOR: char = ':';
 //}
 
 impl Users {
+    pub fn new(path: PathBuf) -> Result<Self> {
+        path.try_into()
+    }
+
     pub fn get_users(&self) -> hash_map::Keys<Username, PasswordHash> {
         self.0.keys()
     }
 
     pub fn contains(&self, username: &Username) -> bool {
         self.0.contains_key(username)
+    }
+
+    pub fn verify(&self, username: &Username, password: String) -> Result<bool> {
+        verify(
+            password,
+            self.0
+                .get(username)
+                .ok_or(Error::UserNotFound(username.to_string()))?,
+        )
+        // TODO: come up with better error
+        .map_err(|_| Error::Htpasswd)
     }
 }
 
