@@ -61,9 +61,14 @@ impl Bookmark {
 
     pub async fn index_by_user(
         db: &Pool<Sqlite>,
+        users: &Users,
         username: &Username,
         rpp_page: Option<(usize, usize)>,
     ) -> Result<Vec<Self>> {
+        if !users.contains(&username) {
+            return Err(Error::UserNotFound(username.to_string()));
+        }
+
         match rpp_page {
             Some((records_per_page, page_number)) => {
                 let limit = records_per_page as i64;

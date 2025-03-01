@@ -1,9 +1,62 @@
-#bookmark-main {
-	background: red;
+#bookmark-main > header,
+#bookmark-controls {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
 
+#bookmark-main,
+#tags-main {
 	& > header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		border-bottom: 2px solid slateGray;
+		margin-bottom: 0;
 	}
+}
+
+#tags-list {
+	padding-left: 0;
+}
+
+.tags-letter-list {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	row-gap: 0.25em;
+	column-gap: 0.75em;
+	flex-wrap: wrap;
+}
+
+.tags-first-letter {
+	font-weight: 600;
+	font-size: 120%;
+}
+
+.tags-list-item {
+	list-style-type: none;
+	margin: 0;
+	padding: 0 0 1em 0;
+	display: flex;
+}
+
+a::first-letter {
+	color: red;
+	font-size: 200%;
+}
+
+.tags-letter-list-item {
+	& > a {
+		text-decoration: none;
+		color: black;
+	}
+
+	&:first-of-type > a:first-letter {
+		font-size: 200%;
+	}
+}
+
+main {
+	display: grid;
+	grid-template-columns: 1fr 0.5fr;
+	gap: 1em;
 }

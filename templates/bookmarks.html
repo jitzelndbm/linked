@@ -5,19 +5,56 @@
 {% endblock %}
 
 {% block content %}
-	<main id="bookmark-main">
-		<header id="bookmark-header">
-			<h2>Bookmarks</h2>
-			<form>
-				<input type="text" placeholder="Search" name="q" />
-			</form>
-		</header>
+	<main>
+		<section id="bookmark-main">
+			<header id="bookmark-header">
+				<h2>Bookmarks</h2>
+				<div id="bookmark-controls">
+					<form>
+						<input type="text" placeholder="Search" name="q" />
+					</form>
+					<a href="/bookmarks/new"><span class="material-icons">add</span></a>
+				</div>
+			</header>
 
-		<ul>
-			{% for bookmark in bookmarks %}
-				<li><a href="{{ bookmark.url }}">{{ bookmark.title }}</a></li>
-			{% endfor %}
-		</ul>
+			<ul>
+				{% for bookmark in bookmarks %}
+					<li><a href="{{ bookmark.url }}">{{ bookmark.title }}</a></li>
+				{% endfor %}
+			</ul>
+		</section>
+
+		<aside id="tags-main">
+			<header>
+				<h2>Tags</h2>
+			</header>
+
+			{#
+        Create a nested list of tags, each list is starts with a new symbol. Formatted in such a way that they can be styles easily
+      #}
+			<ul id="tags-list">
+				{% for letter in tags %}
+					<li class="tags-list-item">
+						<ul class="tags-letter-list">
+							{% for tag in letter %}
+								<li class="tags-letter-list-item">
+									{% let tag_link = format!("/bookmarks?q=%23{}", tag.title) %}
+									{% if loop.first %}
+										{% let rest = format!("{}", tag.title.chars().skip(1).collect::<String>()) %}
+										<a href="{{ tag_link }}"
+											><span class="tags-first-letter"
+												>{{ "{:.1}"|format(tag.title) }}</span
+											>{{ rest }}</a
+										>
+									{% else %}
+										<a href="{{ tag_link }}">{{ tag.title }}</a>
+									{% endif %}
+								</li>
+							{% endfor %}
+						</ul>
+					</li>
+				{% endfor %}
+			</ul>
+		</aside>
 	</main>
-	<aside></aside>
 {% endblock %}

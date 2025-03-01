@@ -6,3 +6,5 @@ result/
 .direnv/
 .pre-commit-config.yaml
 test-var/linked.db
+test-var/linked.db-shm
+test-var/linked.db-wal
