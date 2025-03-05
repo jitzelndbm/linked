@@ -1,16 +1,31 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8" />
+		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-		<link rel="stylesheet" href="/styles.css" />
+		<meta name="color-scheme" content="light dark" />
+		<!--<link rel="stylesheet" href="/styles.css" />-->
 
 		<!-- Add icon font -->
 		<link
 			rel="stylesheet"
 			href="https://cdn.jsdelivr.net/npm/material-icons@1.13.14/iconfont/material-icons.min.css"
 		/>
+
+		<!-- css framework -->
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+		/>
+
+		<style>
+			:root {
+				--pico-font-size: 100%;
+			}
+			.container {
+				max-width: 700px;
+			}
+		</style>
 
 		<title>{% block title %}{% endblock %}</title>
 	</head>

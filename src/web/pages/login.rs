@@ -9,7 +9,7 @@ use crate::{
     models::{appstate::AppState, users::Username},
 };
 
-const SESSION_LOGIN_ERROR_KEY: &str = "display_error_message";
+const SESSION_LOGIN_ERROR_KEY: &str = "display_login_error_message";
 
 #[derive(Template)]
 #[template(path = "login.html")]

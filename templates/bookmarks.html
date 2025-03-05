@@ -5,54 +5,102 @@
 {% endblock %}
 
 {% block content %}
-	<main>
-		<section id="bookmark-main">
-			<header id="bookmark-header">
-				<h2>Bookmarks</h2>
-				<div id="bookmark-controls">
-					<form>
-						<input type="text" placeholder="Search" name="q" />
-					</form>
-					<a href="/bookmarks/new"><span class="material-icons">add</span></a>
-				</div>
-			</header>
+	<nav
+		style="overflow-x: hidden; padding: 0 var(--pico-spacing); background: var(--pico-card-sectioning-background-color);"
+	>
+		<ul>
+			<li><strong>Linkding</strong></li>
+		</ul>
 
-			<ul>
+		<ul>
+			<li>
+				<form>
+					<input
+						type="search"
+						placeholder="Search"
+						aria-label="Search"
+						name="q"
+					/>
+				</form>
+			</li>
+		</ul>
+
+		<ul>
+			<li><a href="/bookmarks/new" class="contrast">New Bookmark</a></li>
+		</ul>
+	</nav>
+
+	<style>
+		main {
+			grid-template-columns: 2fr 1fr !important;
+		}
+
+		@media (max-width: 768px) {
+			main {
+				grid-template-columns: 1fr !important;
+			}
+		}
+	</style>
+
+	<main class="container-fluid grid">
+		<section>
+			<h2>Bookmarks</h2>
+
+			<ul style="padding-left: 0;">
 				{% for bookmark in bookmarks %}
-					<li><a href="{{ bookmark.url }}">{{ bookmark.title }}</a></li>
+					<li style="list-style: none;">
+						<a href="{{ bookmark.url }}">{{ bookmark.title }}</a>
+
+						<ul style="padding-left: 0; row-gap: .5em; display: flex;">
+							<li style="list-style: none;">TODO: tags</li>
+							{% if let Some(description) = bookmark.description %}
+								<li style="list-style: none;">{{ description }}</li>
+							{% endif %}
+						</ul>
+					</li>
 				{% endfor %}
 			</ul>
 		</section>
 
-		<aside id="tags-main">
-			<header>
-				<h2>Tags</h2>
-			</header>
+		<aside>
+			<h2>Tags</h2>
 
 			{#
         Create a nested list of tags, each list is starts with a new symbol. Formatted in such a way that they can be styles easily
       #}
-			<ul id="tags-list">
+			<ul style="padding-left: 0;">
 				{% for letter in tags %}
-					<li class="tags-list-item">
-						<ul class="tags-letter-list">
-							{% for tag in letter %}
-								<li class="tags-letter-list-item">
-									{% let tag_link = format!("/bookmarks?q=%23{}", tag.title) %}
-									{% if loop.first %}
-										{% let rest = format!("{}", tag.title.chars().skip(1).collect::<String>()) %}
-										<a href="{{ tag_link }}"
-											><span class="tags-first-letter"
-												>{{ "{:.1}"|format(tag.title) }}</span
-											>{{ rest }}</a
-										>
-									{% else %}
-										<a href="{{ tag_link }}">{{ tag.title }}</a>
-									{% endif %}
-								</li>
-							{% endfor %}
-						</ul>
-					</li>
+					{% if letter.len() != 0 %}
+						<li style="margin: 0; padding: 0 0 1.5em 0;">
+							<ul
+								style="display: flex; margin: 0; padding: 0; column-gap: 0.75em; row-gap: 0.25em; flex-wrap: wrap;"
+							>
+								{% for tag in letter %}
+									<li style="padding: 0;">
+										{% let tag_link = format!("/bookmarks?q=%23{}", tag.title) %}
+										{% if loop.first %}
+											{% let rest = format!("{}", tag.title.chars().skip(1).collect::<String>()) %}
+											<a
+												class="secondary"
+												style="text-decoration: none;"
+												href="{{ tag_link }}"
+												><strong style="color: var(--pico-contrast);"
+													>{{ "{:.1}"|format(tag.title)|upper }}</strong
+												>{{ rest }}</a
+											>
+										{% else %}
+											<a
+												class="secondary"
+												style="text-decoration:none;"
+												href="{{ tag_link }}"
+												>{{ tag.title }}</a
+											>
+										{% endif %}
+									</li>
+								{% endfor %}
+							</ul>
+						</li>
+					{% endif %}
 				{% endfor %}
 			</ul>
 		</aside>

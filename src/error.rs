@@ -21,7 +21,7 @@ pub enum Error {
     #[error("The username '{0}' could not be found in the htpasswd file")]
     UserNotFound(String),
     #[error("The provided url '{0}' is in an invalid format")]
-    InavlidUrlProvided(String),
+    InvalidUrlProvided(String),
 
     // 401 UNAUTHORIZED
     #[error("A user tried to authenticate without a session")]
@@ -64,7 +64,7 @@ pub struct ErrorTemplate<'a> {
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
         let (status_code, message): (StatusCode, Option<String>) = match self {
-            Self::UserNotFound(_) | Self::InavlidUrlProvided(_) => {
+            Self::UserNotFound(_) | Self::InvalidUrlProvided(_) => {
                 info!("{}", self.to_string());
                 (StatusCode::BAD_REQUEST, Some(self.to_string()))
             }

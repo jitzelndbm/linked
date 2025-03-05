@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS tags (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     username TEXT NOT NULL,
     title TEXT NOT NULL,
-    UNIQUE (username, title)
+    UNIQUE (username, title),
+    CHECK (title = LOWER(title))
 );
 
 CREATE TABLE IF NOT EXISTS bookmark_tags (

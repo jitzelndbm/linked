@@ -1,6 +1,6 @@
 use askama::Template;
 use axum::{extract::State, Extension};
-use rand::{distr::Alphanumeric, Rng};
+use rand::Rng;
 
 use crate::{
     error::Result,
@@ -11,7 +11,7 @@ use crate::{
 #[template(path = "bookmarks.html")]
 pub struct BookmarkTemplate {
     bookmarks: Vec<Bookmark>,
-    tags: Vec<Vec<Tag>>,
+    tags: [Vec<Tag>; Tag::AMOUNT],
 }
 
 // TODO: process search query
@@ -20,13 +20,14 @@ pub async fn get(
     State(ctx): State<AppState>,
 ) -> Result<BookmarkTemplate> {
     let test: String = rand::rng()
-        .sample_iter(&Alphanumeric)
+        .sample_iter(&rand::distr::Alphanumeric)
         .take(7)
         .map(char::from)
+        .map(|c| char::to_ascii_lowercase(&c))
         .collect();
     Tag::insert(&ctx.db, &ctx.users, &username, &test).await?;
     Ok(BookmarkTemplate {
-        bookmarks: Bookmark::index_by_user(&ctx.db, &ctx.users, &username, Some((20, 1))).await?,
-        tags: Tag::index_sorted(&ctx.db, &ctx.users, &username).await?,
+        bookmarks: Bookmark::index_username(&ctx.db, &ctx.users, &username, Some((20, 1))).await?,
+        tags: Tag::index_username_sorted(&ctx.db, &ctx.users, &username).await?,
     })
 }

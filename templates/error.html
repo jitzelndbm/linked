@@ -2,22 +2,17 @@
 
 {% block title %}
 	{{ status_code }}
-	{#+ #}
 {% endblock %}
 
 {% block content %}
 	<header>
 		<h1>{{ status_code }}</h1>
-		{% match reason %}
-			{% when Some with (r) %}
-			<p>{{ r }}</p>
-			{% when None %}
-		{% endmatch %}
+		{% if let Some(reason) = reason %}
+			<p>{{ reason }}</p>
+		{% endif %}
 	</header>
 
-	{% match message %}
-		{% when Some with (m) +%}
-		<pre>message: {{+ m }}</pre>
-		{% when None %}
-	{% endmatch %}
+	{% if let Some(message) = message +%}
+		<pre>message: {{+ message }}</pre>
+	{% endif %}
 {% endblock %}

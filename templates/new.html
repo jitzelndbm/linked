@@ -1,0 +1,137 @@
+{% extends "./base.html" %}
+
+{% block title %}
+	New Bookmark
+{% endblock %}
+
+{% block content %}
+  <style>
+    #tags-suggestions {
+      display: flex;
+      z-index: 99;
+      position: absolute;
+      left: 0;
+      top: calc(100% - var(--pico-spacing));
+      flex-direction: column;
+      width: 100%;
+      min-width: fit-content;
+      margin: 0;
+      padding: 0;
+      border: var(--pico-border-width) solid var(--pico-dropdown-border-color);
+      border-radius: var(--pico-border-radius);
+      background-color: var(--pico-dropdown-background-color);
+      box-shadow: var(--pico-dropdown-box-shadow);
+      color: var(--pico-dropdown-color);
+      white-space: nowrap;
+    }
+
+    #tags-suggestions li {
+      margin-top: calc(var(--pico-form-element-spacing-vertical) * .5);
+      cursor: pointer;
+      padding: calc(var(--pico-form-element-spacing-vertical) * .5) var(--pico-form-element-spacing-horizontal);
+      color: var(--pico-dropdown-color);
+      margin: 0;
+      list-style: none;
+      list-style-position: inside;
+    }
+
+    #tags-suggestions li:hover,
+    #tags-suggestions li.selected { 
+      background: var(--pico-dropdown-hover-background-color);
+    }
+
+    #tags-suggestions:not(.open) { display: none; }
+  </style>
+
+	<main class="container">
+    
+		<form method="post" id="new-bookmark-form">
+			<label for="title">Title:</label>
+			<input type="text" name="title" required />
+
+			<label for="url">URL:</label>
+			<input type="text" name="url" required />
+
+			<label for="tags">Tags:</label>
+      <div id="tags-input-wrapper" style="margin: 0; position: relative;">
+        <input type="text" id="tags-input" name="tags" />
+        <ul id="tags-suggestions"></ul>
+      </div>
+
+			<label for="description">Description:</label>
+			<textarea id="description-input" name="description"></textarea>
+
+			<label for="notes">Notes:</label>
+			<textarea id="notes-input" name="notes"></textarea>
+
+      {% if let Some(message) = message %}
+        <p id="form-helper" class="error-message">{{message}}</p>
+      {% endif %}
+
+			<input type="submit" value="Add bookmark" />
+		</form>
+
+		<script>
+			const input = document.getElementById("tags-input");
+			const sug = document.getElementById("tags-suggestions");
+			const tags = [{% for tag in tags %}"{{ tag.title }}"{% if !loop.last %},{% endif %}{% endfor %}];
+
+			input.addEventListener("focusout", () => sug.classList.remove("open"));
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          if (sug.classList.contains("open") && sug.children.length > 0) {
+            e.preventDefault();
+            const firstLi = sug.querySelector("li:first-child");
+            if (firstLi) {
+              const words = input.value.split(" ");
+              words.pop();
+              words.push(firstLi.textContent);
+              input.value = words.join(" ") + " ";
+              sug.innerHTML = "";
+           }
+          }
+        }
+      });
+
+			input.addEventListener("input", () => {
+				const currentValue = input.value;
+
+        if (currentValue.trim() !== "") {
+          sug.classList.add("open");
+        } else {
+          sug.classList.remove("open");
+        }
+
+				const words = currentValue.split(" ");
+				const lastWord = words[words.length - 1];
+
+				const filteredTags =
+					lastWord === ""
+						? tags
+						: tags.filter((tag) =>
+								tag.toLowerCase().startsWith(lastWord.toLowerCase()),
+							);
+
+				sug.innerHTML = "";
+				filteredTags.forEach((tag) => {
+					const li = document.createElement("li");
+					li.textContent = tag;
+					li.addEventListener("mousedown", () => {
+						words.pop();
+						words.push(tag);
+						input.value = words.join(" ") + " ";
+						input.focus();
+						sug.innerHTML = "";
+					});
+
+					sug.appendChild(li);
+				});
+        
+        if (sug.children.length > 0) {
+          sug.children[0].classList.add("selected");
+        }
+			});
+		</script>
+	</main>
+{% endblock %}

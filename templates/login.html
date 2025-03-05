@@ -5,17 +5,46 @@
 {% endblock %}
 
 {% block content %}
-	{% if display_error_message %}
-		<pre>Something went wrong while trying to log in!</pre>
-	{% endif %}
+	<main class="container">
+		<form action="" method="POST">
+			<label for="username">Username</label>
+			<input
+				type="text"
+				id="username"
+				name="username"
+				placeholder="Username"
+				aria-label="Username"
+				aria-describedby="form-helper"
+				required
+				{% if display_error_message %}
+					aria-invalid="true"
+				{% endif %}
+			/>
 
-	<form action="" method="POST">
-		<label for="username">Username:</label>
-		<input type="text" id="username" name="username" required /><br /><br />
+			<label for="password">Password</label>
+			<input
+				type="password"
+				id="password"
+				name="password"
+				placeholder="Password"
+				aria-label="Password"
+				aria-describedby="form-helper"
+				required
+				{% if display_error_message %}
+					aria-invalid="true"
+				{% endif %}
+			/>
 
-		<label for="password">Password:</label>
-		<input type="password" id="password" name="password" required /><br /><br />
+			{% if display_error_message %}
+				<p
+					id="form-helper"
+					style="color: var(--pico-form-element-invalid-border-color);"
+				>
+					Something went wrong while trying to log in!
+				</p>
+			{% endif %}
 
-		<button type="submit">Login</button>
-	</form>
+			<input type="submit" value="Login" />
+		</form>
+	</main>
 {% endblock %}

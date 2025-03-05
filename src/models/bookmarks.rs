@@ -3,7 +3,10 @@ use sqlx::{Pool, Sqlite};
 
 use crate::error::{Error, Result};
 
-use super::users::{Username, Users};
+use super::{
+    tags::Tag,
+    users::{Username, Users},
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Bookmark {
@@ -16,27 +19,42 @@ pub struct Bookmark {
 }
 
 impl Bookmark {
+    /// This function accepts form data, and checks it
     pub async fn insert(
         db: &Pool<Sqlite>,
-        users: Users,
+        users: &Users,
         username: &Username,
         title: &str,
         url: &str,
         description: Option<&str>,
         notes: Option<&str>,
+        tags: &str,
     ) -> Result<()> {
         if !users.contains(&username) {
             return Err(Error::UserNotFound(username.to_string()));
         }
 
         if !["https://", "http://"].iter().any(|&p| url.starts_with(p)) {
-            return Err(Error::InavlidUrlProvided(url.to_string()));
+            return Err(Error::InvalidUrlProvided(url.to_string()));
         }
 
         sqlx::query!("INSERT INTO bookmarks (username, title, url, description, notes) VALUES ($1, $2, $3, $4, $5)", username, title, url, description, notes)
             .execute(db)
             .await
             .map_err(|e| Error::QueryException(e.to_string()))?;
+
+        let existing_tags: Vec<String> = Tag::index_username(db, &users, username)
+            .await?
+            .iter()
+            .map(|t| t.title.clone())
+            .collect();
+
+        for title in tags
+            .split(' ')
+            .filter(|tag| !tag.is_empty() && !existing_tags.contains(&tag.to_string()))
+        {
+            Tag::insert(db, users, username, title).await?;
+        }
 
         Ok(())
     }
@@ -59,7 +77,7 @@ impl Bookmark {
         }
     }
 
-    pub async fn index_by_user(
+    pub async fn index_username(
         db: &Pool<Sqlite>,
         users: &Users,
         username: &Username,

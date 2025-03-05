@@ -33,6 +33,7 @@
       ".editorconfig"
       ".envrc"
       "LICENSE"
+      "test-var/htpasswd_example"
     ];
   };
 }
