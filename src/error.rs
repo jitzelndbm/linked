@@ -2,6 +2,7 @@ use askama::Template;
 use std::io::Write;
 
 use axum::{
+    extract::rejection::QueryRejection,
     http::StatusCode,
     response::{IntoResponse, Response},
 };
@@ -22,6 +23,8 @@ pub enum Error {
     UserNotFound(String),
     #[error("The provided url '{0}' is in an invalid format")]
     InvalidUrlProvided(String),
+    #[error("The provided query is invalid")]
+    InvalidQuery,
 
     // 401 UNAUTHORIZED
     #[error("A user tried to authenticate without a session")]
@@ -64,7 +67,7 @@ pub struct ErrorTemplate<'a> {
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
         let (status_code, message): (StatusCode, Option<String>) = match self {
-            Self::UserNotFound(_) | Self::InvalidUrlProvided(_) => {
+            Self::UserNotFound(_) | Self::InvalidUrlProvided(_) | Self::InvalidQuery => {
                 info!("{}", self.to_string());
                 (StatusCode::BAD_REQUEST, Some(self.to_string()))
             }
@@ -105,6 +108,12 @@ pub async fn not_found_handler() -> Response {
 
 pub fn default_error_handler(error: &Error, output: &mut dyn Write) {
     writeln!(output, "[error]: {}", error).ok();
+}
+
+impl From<QueryRejection> for Error {
+    fn from(_: QueryRejection) -> Self {
+        Self::InvalidQuery
+    }
 }
 
 ///// This macro is uused to quickly implement a method to convert errors into errors that the program

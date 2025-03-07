@@ -19,7 +19,6 @@ pub struct Bookmark {
 }
 
 impl Bookmark {
-    /// This function accepts form data, and checks it
     pub async fn insert(
         db: &Pool<Sqlite>,
         users: &Users,
@@ -59,23 +58,23 @@ impl Bookmark {
         Ok(())
     }
 
-    pub async fn index(db: &Pool<Sqlite>, range: Option<(i64, i64)>) -> Result<Vec<Self>> {
-        match range {
-            Some((begin, end)) => sqlx::query_as!(
-                Self,
-                "SELECT * FROM bookmarks WHERE id BETWEEN $1 AND $2",
-                begin,
-                end
-            )
-            .fetch_all(db)
-            .await
-            .map_err(|e| Error::QueryException(e.to_string())),
-            None => sqlx::query_as!(Self, "SELECT * FROM bookmarks")
-                .fetch_all(db)
-                .await
-                .map_err(|e| Error::QueryException(e.to_string())),
-        }
-    }
+    //pub async fn index(db: &Pool<Sqlite>, range: Option<(i64, i64)>) -> Result<Vec<Self>> {
+    //    match range {
+    //        Some((begin, end)) => sqlx::query_as!(
+    //            Self,
+    //            "SELECT * FROM bookmarks WHERE id BETWEEN $1 AND $2",
+    //            begin,
+    //            end
+    //        )
+    //        .fetch_all(db)
+    //        .await
+    //        .map_err(|e| Error::QueryException(e.to_string())),
+    //        None => sqlx::query_as!(Self, "SELECT * FROM bookmarks")
+    //            .fetch_all(db)
+    //            .await
+    //            .map_err(|e| Error::QueryException(e.to_string())),
+    //    }
+    //}
 
     pub async fn index_username(
         db: &Pool<Sqlite>,

@@ -41,9 +41,15 @@
     }
 
     #tags-suggestions:not(.open) { display: none; }
+
+    form {
+      max-width: 600px;
+      width: 50vw;
+      min-width: min(100%, 400px);
+    }
   </style>
 
-	<main class="container">
+	<main class="container centered-container">
     
 		<form method="post" id="new-bookmark-form">
 			<label for="title">Title:</label>

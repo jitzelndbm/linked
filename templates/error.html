@@ -5,14 +5,16 @@
 {% endblock %}
 
 {% block content %}
-	<header>
-		<h1>{{ status_code }}</h1>
-		{% if let Some(reason) = reason %}
-			<p>{{ reason }}</p>
-		{% endif %}
-	</header>
+	<main class="container">
+		<header>
+			<h1>{{ status_code }}</h1>
+			{% if let Some(reason) = reason %}
+				<p>{{ reason }}</p>
+			{% endif %}
+		</header>
 
-	{% if let Some(message) = message +%}
-		<pre>message: {{+ message }}</pre>
-	{% endif %}
+		{% if let Some(message) = message +%}
+			<pre style="padding: var(--pico-spacing);">message: {{+ message }}</pre>
+		{% endif %}
+	</main>
 {% endblock %}
