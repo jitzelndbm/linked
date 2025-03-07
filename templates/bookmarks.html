@@ -20,6 +20,7 @@
 						placeholder="Search"
 						aria-label="Search"
 						name="q"
+						value="{% if let Some(query) = search %}{{ query }}{% endif %}"
 					/>
 				</form>
 			</li>
@@ -77,7 +78,25 @@
 							>
 								{% for tag in letter %}
 									<li style="padding: 0;">
-										{% let tag_link = format!("/bookmarks?q=%23{}", tag.title) %}
+										{%-
+											let s = search
+											.as_deref()
+											.unwrap_or("")
+											.replace("#", "%23")
+											.replace(" ", "+")
+										-%}
+										{%-
+											let tag_link = format!(
+											  "/bookmarks?q={}%23{}",
+											  if s.is_empty() {
+											    "".to_string()
+											  } else {
+											    format!("{}+", s)
+											  },
+											  tag.title
+											)
+										-%}
+
 										{% if loop.first %}
 											{% let rest = format!("{}", tag.title.chars().skip(1).collect::<String>()) %}
 											<a

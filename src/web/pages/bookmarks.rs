@@ -1,8 +1,10 @@
 use askama::Template;
 use axum::{
     extract::{FromRequestParts, Query, State},
+    http::Uri,
     Extension,
 };
+use itertools::Itertools;
 use serde::Deserialize;
 
 use crate::{
@@ -13,6 +15,7 @@ use crate::{
 #[derive(Template)]
 #[template(path = "bookmarks.html")]
 pub struct BookmarkTemplate {
+    search: Option<String>,
     bookmarks: Vec<Bookmark>,
     tags: [Vec<Tag>; Tag::AMOUNT],
     selected_tags: Vec<Tag>,
@@ -31,7 +34,52 @@ pub async fn get(
     State(ctx): State<AppState>,
     query: BookmarkQuery,
 ) -> Result<BookmarkTemplate> {
-    dbg!(query.q);
+    match query.q {
+        Some(ref q) => {
+            let (tags, words): (Vec<String>, Vec<String>) = q
+                .split_whitespace()
+                .map(String::from)
+                .partition_map(|word| {
+                    if let Some(tag) = word.strip_prefix('#') {
+                        itertools::Either::Left(tag.to_string())
+                    } else {
+                        itertools::Either::Right(word)
+                    }
+                });
+
+            // TODO: process search query
+            dbg!(tags);
+            dbg!(words);
+
+            Ok(BookmarkTemplate {
+                bookmarks: Bookmark::index_username(
+                    &ctx.db,
+                    &ctx.users,
+                    &username,
+                    (query.per_page.unwrap_or(20), query.page.unwrap_or(1)),
+                )
+                .await?,
+                tags: Tag::index_username_sorted(&ctx.db, &ctx.users, &username).await?,
+                selected_tags: Vec::new(),
+                search: query.q,
+            })
+        }
+
+        // No search query provided, show all bookmarks and all tags
+        None => Ok(BookmarkTemplate {
+            bookmarks: Bookmark::index_username(
+                &ctx.db,
+                &ctx.users,
+                &username,
+                (query.per_page.unwrap_or(20), query.page.unwrap_or(1)),
+            )
+            .await?,
+            tags: Tag::index_username_sorted(&ctx.db, &ctx.users, &username).await?,
+            selected_tags: Vec::new(),
+            search: None,
+        }),
+    }
+
     //let test: String = rand::rng()
     //    .sample_iter(&rand::distr::Alphanumeric)
     //    .take(7)
@@ -39,16 +87,4 @@ pub async fn get(
     //    .map(|c| char::to_ascii_lowercase(&c))
     //    .collect();
     //Tag::insert(&ctx.db, &ctx.users, &username, &test).await?;
-
-    Ok(BookmarkTemplate {
-        bookmarks: Bookmark::index_username(
-            &ctx.db,
-            &ctx.users,
-            &username,
-            Some((query.per_page.unwrap_or(20), query.page.unwrap_or(1))),
-        )
-        .await?,
-        tags: Tag::index_username_sorted(&ctx.db, &ctx.users, &username).await?,
-        selected_tags: Vec::new(),
-    })
 }

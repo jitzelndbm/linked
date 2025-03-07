@@ -80,36 +80,24 @@ impl Bookmark {
         db: &Pool<Sqlite>,
         users: &Users,
         username: &Username,
-        rpp_page: Option<(usize, usize)>,
+        rpp_page: (usize, usize),
     ) -> Result<Vec<Self>> {
         if !users.contains(&username) {
             return Err(Error::UserNotFound(username.to_string()));
         }
 
-        match rpp_page {
-            Some((records_per_page, page_number)) => {
-                let limit = records_per_page as i64;
-                let offset = (page_number as i64 - 1) * limit;
+        let limit = rpp_page.0 as i64;
+        let offset = (rpp_page.1 as i64 - 1) * limit;
 
-                sqlx::query_as!(
-                    Self,
-                    "SELECT * FROM bookmarks WHERE username = $1 ORDER BY id LIMIT $2 OFFSET $3",
-                    username,
-                    limit,
-                    offset
-                )
-                .fetch_all(db)
-                .await
-                .map_err(|e| Error::QueryException(e.to_string()))
-            }
-            None => sqlx::query_as!(
-                Self,
-                "SELECT * FROM bookmarks WHERE username = $1",
-                username
-            )
-            .fetch_all(db)
-            .await
-            .map_err(|e| Error::QueryException(e.to_string())),
-        }
+        sqlx::query_as!(
+            Self,
+            "SELECT * FROM bookmarks WHERE username = $1 ORDER BY id LIMIT $2 OFFSET $3",
+            username,
+            limit,
+            offset
+        )
+        .fetch_all(db)
+        .await
+        .map_err(|e| Error::QueryException(e.to_string()))
     }
 }
