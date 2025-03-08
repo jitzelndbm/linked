@@ -1,6 +1,6 @@
 use std::array;
 
-use sqlx::{Pool, Sqlite};
+use sqlx::{sqlite::SqliteQueryResult, Pool, Sqlite};
 
 use crate::error::{Error, Result};
 
@@ -8,8 +8,8 @@ use super::users::{Username, Users};
 
 #[derive(Debug)]
 pub struct Tag {
-    id: i64,
-    username: String,
+    pub id: i64,
+    pub username: String,
     pub title: String,
 }
 
@@ -21,21 +21,19 @@ impl Tag {
         users: &Users,
         username: &Username,
         title: &str,
-    ) -> Result<()> {
+    ) -> Result<SqliteQueryResult> {
         if !users.contains(&username) {
             return Err(Error::UserNotFound(username.to_string()));
         }
 
-        sqlx::query!(
+        Ok(sqlx::query!(
             "INSERT INTO tags (username, title) VALUES ($1, $2)",
             username,
             title
         )
         .execute(db)
         .await
-        .map_err(|e| Error::QueryException(e.to_string()))?;
-
-        Ok(())
+        .map_err(|e| Error::QueryException(e.to_string()))?)
     }
 
     pub async fn index_username(

@@ -57,7 +57,7 @@ pub async fn post(
         &form.url,
         form.description.as_deref(),
         form.notes.as_deref(),
-        &form.tags,
+        form.tags.split(' ').collect(),
     )
     .await
     {

@@ -25,6 +25,8 @@ pub enum Error {
     InvalidUrlProvided(String),
     #[error("The provided query is invalid")]
     InvalidQuery,
+    #[error("The tag '{0}' could not be found for user '{1}'")]
+    TagNotFound(String, String),
 
     // 401 UNAUTHORIZED
     #[error("A user tried to authenticate without a session")]
@@ -67,7 +69,10 @@ pub struct ErrorTemplate<'a> {
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
         let (status_code, message): (StatusCode, Option<String>) = match self {
-            Self::UserNotFound(_) | Self::InvalidUrlProvided(_) | Self::InvalidQuery => {
+            Self::UserNotFound(_)
+            | Self::InvalidUrlProvided(_)
+            | Self::InvalidQuery
+            | Self::TagNotFound(..) => {
                 info!("{}", self.to_string());
                 (StatusCode::BAD_REQUEST, Some(self.to_string()))
             }

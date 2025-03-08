@@ -1,9 +1,4 @@
-use axum::{
-    http::header,
-    response::{IntoResponse, Response},
-    routing::get,
-    Router,
-};
+use axum::Router;
 
 use crate::{error, models::appstate::AppState};
 
@@ -17,19 +12,6 @@ mod pages;
 pub fn router() -> Router<AppState> {
     Router::<AppState>::new()
         .merge(pages::router())
-        .route("/styles.css", get(css_provide))
         .fallback(error::not_found_handler)
-
     //.nest("/api", api::router())
-}
-
-pub async fn css_provide() -> Response {
-    (
-        [(
-            header::CONTENT_TYPE,
-            header::HeaderValue::from_static("text/css"),
-        )],
-        include_str!("../../assets/styles.css"),
-    )
-        .into_response()
 }

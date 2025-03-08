@@ -1,7 +1,6 @@
 use askama::Template;
 use axum::{
     extract::{FromRequestParts, Query, State},
-    http::Uri,
     Extension,
 };
 use itertools::Itertools;
@@ -34,7 +33,7 @@ pub async fn get(
     State(ctx): State<AppState>,
     query: BookmarkQuery,
 ) -> Result<BookmarkTemplate> {
-    match query.q {
+    match query.q.as_ref().map(|q| q.trim()).filter(|q| !q.is_empty()) {
         Some(ref q) => {
             let (tags, words): (Vec<String>, Vec<String>) = q
                 .split_whitespace()
@@ -47,16 +46,14 @@ pub async fn get(
                     }
                 });
 
-            // TODO: process search query
-            dbg!(tags);
-            dbg!(words);
-
             Ok(BookmarkTemplate {
-                bookmarks: Bookmark::index_username(
+                bookmarks: Bookmark::index_username_with_filters(
                     &ctx.db,
                     &ctx.users,
                     &username,
                     (query.per_page.unwrap_or(20), query.page.unwrap_or(1)),
+                    tags,
+                    words,
                 )
                 .await?,
                 tags: Tag::index_username_sorted(&ctx.db, &ctx.users, &username).await?,
